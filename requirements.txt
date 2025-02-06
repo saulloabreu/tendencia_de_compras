@@ -48,7 +48,7 @@ defusedxml==0.7.1
 distro==1.7.0
 distro-info==1.0
 duckdb==0.10.2
-duplicity==0.8.21
+duplicity==0.8.22
 et-xmlfile==1.1.0
 evdev==1.6.1
 exceptiongroup==1.2.0
