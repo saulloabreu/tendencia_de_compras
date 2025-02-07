@@ -11,7 +11,11 @@ import os
 
 
 '''=============================== Carregar os dados #==============================='''
-df = pd.read_csv('/home/black_d/Downloads/Provas/data/df_tendências_de_compras.csv')
+# Caminho relativo para a pasta "data"
+file_path = os.path.join(os.path.dirname(__file__), "data", "df_tendências_de_compras.csv")
+
+# Carregando o arquivo
+df = pd.read_csv(file_path)
 
 
 ''' ============================# config_style #================================'''
