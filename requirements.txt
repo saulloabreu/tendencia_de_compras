@@ -1,5 +1,6 @@
-Dash==2.18.2
-werkzeug==3.0.1
-pandas==2.2.2
-plotly==6.0.0
-dash-bootstrap-components==1.7.1
+Dash
+werkzeug
+pandas
+plotly
+dash-bootstrap-components
+dash-bootstrap-templates
