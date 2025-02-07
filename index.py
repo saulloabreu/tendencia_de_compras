@@ -6,6 +6,8 @@ import plotly.graph_objects as go
 import pandas as pd
 from dash_bootstrap_templates import ThemeSwitchAIO
 from app import *
+import os
+
 
 
 '''=============================== Carregar os dados #==============================='''
@@ -104,10 +106,10 @@ sidebar = html.Div(
             ),
             dbc.Collapse(
                 dbc.ButtonGroup([
-                        dbc.Button("DashBoard 1", href="/", color="primary",className="m-1", 
+                        dbc.Button("DashBoard 1", href="/", color="info",className="m-1", 
                                     style = {'font-size': '12px'},
                                     ),
-                        dbc.Button("DashBoard 2", href="/page2", color="secondary", className="m-1", 
+                        dbc.Button("DashBoard 2", href="/page2", color="info", className="m-1", 
                                    style = {'font-size': '12px'},
                                    ),
                     ], 
@@ -142,9 +144,9 @@ sidebar = html.Div(
             dbc.Collapse(
                 html.Div(
                     dbc.ButtonGroup([
-                            dbc.Button("Todos", id="gender-all", href="#", color="primary", className="m-1", style = {'font-size': '12px'}
+                            dbc.Button("Todos", id="gender-all", href="#", color="info", className="m-1", style = {'font-size': '12px'}
                             ),
-                            dbc.Button("Masculino", id="gender-male", href="#", color="secondary", className="m-1", style = {'font-size': '12px'}
+                            dbc.Button("Masculino", id="gender-male", href="#", color="info", className="m-1", style = {'font-size': '12px'}
                             ),
                             dbc.Button("Feminino", id="gender-female", href="#", color="info", className="m-1", style = {'font-size': '12px'}
                             ),
@@ -775,4 +777,8 @@ def toggle_collapse(n, is_open):
 
 
 if __name__ == "__main__":
-    app.run_server(port=8588, debug=False)
+    # app.run_server(port=8588, debug=True)
+    # app.run_server(host='0.0.0.0', debug = True, port=int(os.environ.get('PORT', 8588)))
+    app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 8588)))
+
+
