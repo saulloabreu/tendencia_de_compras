@@ -13,4 +13,5 @@ app = dash.Dash(__name__,
 
 app.config.suppress_callback_exceptions = True
 app.scripts.config.serve_localy = True
+app.title = 'Insights-Tendências de Compras'
 server = app.server
