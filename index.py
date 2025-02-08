@@ -14,8 +14,16 @@ import os
 # Caminho relativo para a pasta "data"
 file_path = os.path.join(os.path.dirname(__file__), "data", "df_tendências_de_compras.csv")
 
+if not os.path.exeists(file_path):
+    import requests
+    url = 'https://github.com/saulloabreu/tendencia_de_compras/blob/main/data/df_tend%C3%AAncias_de_compras.csv'
+    r = requests.get(url)
+    os.makedirs("data", exist_ok = True)
+    with open(file_path, "wb") as f:
+        f.write(r.content)
+
 # Carregando o arquivo
-df = pd.read_csv(file_path)
+df = pd.read_csv(file_path, chunksize=1000)
 
 
 ''' ============================# config_style #================================'''
@@ -176,8 +184,8 @@ sidebar = html.Div(
 
 content = html.Div(id="page-content")
 
-app.layout = html.Div([dcc.Location(id="url"), sidebar, content], 
-                          style={"height": "100vh", "overflow-x": "hidden"}  # Impede a rolagem
+app.layout = html.Div([dcc.Location(id="url", refresh=False), sidebar, content], 
+                          style={"height": "100vh", "overflow-x": "hidden"} 
 )
 
 

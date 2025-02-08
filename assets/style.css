@@ -101,5 +101,30 @@ height: 40px;
   }
 }
 
+@media (max-width: 48em) {
+  #sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    background-color: #222; /* Ajuste conforme necessário */
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  #sidebar a {
+    display: block;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  #content {
+    margin-left: 0; /* Garante que o conteúdo não fique escondido */
+    padding-top: 60px; /* Ajuste para evitar sobreposição */
+  }
+}
+
+
 
 
