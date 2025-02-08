@@ -23,7 +23,7 @@ if not os.path.exists(file_path):
         f.write(r.content)
 
 # Carregando o arquivo
-df = pd.read_csv(file_path, chunksize=1000)
+df = pd.read_csv(file_path)
 
 
 ''' ============================# config_style #================================'''
@@ -118,10 +118,10 @@ sidebar = html.Div(
             ),
             dbc.Collapse(
                 dbc.ButtonGroup([
-                        dbc.Button("DashBoard 1", href="/", color="info",className="m-1", 
+                       dbc.Button("DashBoard 1", href="/", color="info",className="m-1 btn-hover", 
                                     style = {'font-size': '12px'},
                                     ),
-                        dbc.Button("DashBoard 2", href="/page2", color="info", className="m-1", 
+                        dbc.Button("DashBoard 2", href="/page2", color="info", className="m-1 btn-hover", 
                                    style = {'font-size': '12px'},
                                    ),
                     ], 
@@ -156,11 +156,13 @@ sidebar = html.Div(
             dbc.Collapse(
                 html.Div(
                     dbc.ButtonGroup([
-                            dbc.Button("Todos", id="gender-all", href="#", color="info", className="m-1", style = {'font-size': '12px'}
+                             dcc.Store(id='selected-filter', storage_type='session'), #armazena a opção de filtro
+
+                            dbc.Button("Todos", id="gender-all", href="#", color="info", className="m-1 btn-hover", style = {'font-size': '12px'}
                             ),
-                            dbc.Button("Masculino", id="gender-male", href="#", color="info", className="m-1", style = {'font-size': '12px'}
+                            dbc.Button("Masculino", id="gender-male", href="#", color="info", className="m-1 btn-hover", style = {'font-size': '12px'}
                             ),
-                            dbc.Button("Feminino", id="gender-female", href="#", color="info", className="m-1", style = {'font-size': '12px'}
+                            dbc.Button("Feminino", id="gender-female", href="#", color="info", className="m-1 btn-hover", style = {'font-size': '12px'}
                             ),
                         ],
                         vertical=True,  # Exibe os botões na vertical
@@ -512,14 +514,21 @@ def distribuicao_por_tamanho(df):
     return fig4
 
 '''============================# Gráfico 5 #==================================='''
-def metodo_de_pagamento(df):
+def metodo_de_pagamento(df, gender_filter):
     pagamentos = df['Método_de_pagamento']
-    df_metodo_pagamento = pagamentos.value_counts().sort_values(ascending=False).reset_index(name = 'Quantidade')
+    df_metodo_pagamento = pagamentos.value_counts().sort_values(ascending=False).reset_index(name='Quantidade')
     sort_df_metodo_pagamento = df_metodo_pagamento.sort_values(by='Quantidade')
 
-    # Define a função para ajustar textposition dinamicamente
-    def ajustar_textposition(y_values):
-        return ["bottom center" if y < 130 else "bottom center" if y > 655 else "top center" for y in y_values]
+    # Função para ajustar a posição do texto dinamicamente com base no gênero selecionado
+    def ajustar_textposition(y_values, gender_filter):
+        if gender_filter == 'All':
+            return ["bottom center" if y < 130 else "bottom center" if y > 655 else "top center" for y in y_values]
+        elif gender_filter == 'Masculino':
+            return ["bottom center" if y > 460 else "top center" for y in y_values]
+        elif gender_filter == 'Feminino':
+            return ["bottom center" if y > 215 else "top center" for y in y_values]
+        return ["top center" for _ in y_values]  # Padrão de fallback
+    
 
     # Criar o gráfico de linhas
     fig = px.line(sort_df_metodo_pagamento, 
@@ -533,7 +542,9 @@ def metodo_de_pagamento(df):
     fig.update_traces(marker_color='blue',
                       marker = dict(size = 9),  
                       line=dict(color = 'blue', width=4), 
-                      textposition=ajustar_textposition(sort_df_metodo_pagamento['Quantidade'])) 
+                      textposition=ajustar_textposition(sort_df_metodo_pagamento['Quantidade'], 
+                                                        gender_filter)
+                    ) 
     fig.update_layout(
         main_config, 
         height = 250, 
@@ -681,35 +692,63 @@ def toggle_dropdown(n_clicks, is_open):
     return is_open
 
 
-# Callback para exibir/esconder os dropdowns dos filtros
+#callback do filtro por genero
 @app.callback(
-    Output("filter-dropdown-content", "is_open"),
+    [Output("filter-dropdown-content", "is_open"),  
+     Output('selected-filter', 'data')],  
     [
-        Input("toggle-filter-dropdown", "n_clicks"),  # Botão para abrir/fechar o dropdown
-        Input("gender-all", "n_clicks"),  # Botões para filtrar por gênero
+        Input("toggle-filter-dropdown", "n_clicks"), 
+        Input("gender-all", "n_clicks"),  
         Input("gender-male", "n_clicks"),
         Input("gender-female", "n_clicks")
     ],
-    State("filter-dropdown-content", "is_open")  # Estado atual do dropdown
+    State("filter-dropdown-content", "is_open")  #
 )
 def toggle_filter_dropdown(n, n_clicks_all, n_clicks_male, n_clicks_female, is_open):
     ctx = dash.callback_context
 
     # Verifica qual botão foi clicado
     if not ctx.triggered:
-        return is_open  # Mantém o estado atual do dropdown se nada foi clicado
+        return is_open, dash.no_update  # Mantém o estado atual do dropdown e não atualiza o filtro
 
     button_id = ctx.triggered[0]['prop_id'].split('.')[0]
 
-    # Se qualquer botão de gênero for clicado, fecha o dropdown
+    # Se qualquer botão de gênero for clicado, fecha o dropdown e atualiza o filtro
     if button_id in ["gender-all", "gender-male", "gender-female"]:
-        return False  # Fecha o dropdown após o filtro ser aplicado
+        return False, button_id  # Fecha o dropdown e armazena o filtro selecionado
 
     # Se o botão de toggle foi clicado, alterna o estado do dropdown
     if button_id == "toggle-filter-dropdown":
-        return not is_open  # Alterna entre abrir e fechar
+        return not is_open, dash.no_update  # Alterna entre abrir e fechar sem atualizar o filtro
 
-    return is_open
+    return is_open, dash.no_update  # Mantém o estado atual do dropdown e não altera o filtro
+
+
+#callback que estiliza os botoes salvando a utima opção do usuario
+@app.callback(
+    [
+        Output("gender-all", "style"),
+        Output("gender-male", "style"),
+        Output("gender-female", "style")
+    ],
+    [Input('selected-filter', 'data')]
+)
+def highlight_selected_filter(selected_filter):
+    # Estilos padrão para os botões
+    # dropdown-content", "is_open"),
+    # toggle-dropdown", "n_clicks"),
+    # dropdown-content", "is_open")
+    default_style = {'background-color': '#17a2b8', 'color': 'white'}
+    selected_style = {'background-color': '#0056b3', 'color': 'white'}  # Azul escuro para destaque
+
+    # Definindo a cor do fundo dependendo do filtro selecionado
+    style_all = selected_style if selected_filter == 'gender-all' else default_style
+    style_male = selected_style if selected_filter == 'gender-male' else default_style
+    style_female = selected_style if selected_filter == 'gender-female' else default_style
+    # style_dropdown-content = selected_style if selected_filter == 'gender-female' else default_style
+
+
+    return style_all, style_male, style_female
 
 
 # callback dos graficos
@@ -750,7 +789,7 @@ def update_graphs(n_clicks_all, n_clicks_male, n_clicks_female):
     graph_2 = distribuicao_genero(filtered_df)
     graph_3 = compras_por_temporada(filtered_df)
     graph_4 = distribuicao_por_tamanho(filtered_df)
-    graph_5 = metodo_de_pagamento(filtered_df)
+    graph_5 = metodo_de_pagamento(filtered_df, gender_filter)
     graph_6 = plot_demanda_clothing(filtered_df)
     graph_7 = produtos_com_mais_receita(filtered_df)
 

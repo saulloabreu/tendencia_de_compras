@@ -1,4 +1,9 @@
 
+/* Adiciona efeito de hover com a cor azul escura nos botões */
+.btn-hover:hover {
+  background-color: #02254b !important;  /* Azul escuro */
+  border-color: #ffffff !important;      /* Ajusta a cor da borda */
+}
 
 
 #sidebar {
