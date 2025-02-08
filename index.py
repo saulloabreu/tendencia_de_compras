@@ -328,7 +328,7 @@ def render_page_content(pathname):
                         # style={"margin-top": "auto"}
                         )
                     ], style=tab_card)
-                ], sm=5, lg=5)
+                ], sm=12, lg=5)
             ], className='g-2 my-auto', style={'margin-top': '7px'}),
 
 
@@ -831,5 +831,3 @@ if __name__ == "__main__":
     # app.run_server(port=8588, debug=True)
     # app.run_server(host='0.0.0.0', debug = True, port=int(os.environ.get('PORT', 8588)))
     app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 8050)))
-
-
