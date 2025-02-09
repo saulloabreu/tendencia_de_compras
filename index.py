@@ -6,7 +6,10 @@ import plotly.graph_objects as go
 import pandas as pd
 from dash_bootstrap_templates import ThemeSwitchAIO
 from app import *
+import sys
 import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
 
 
 
@@ -336,8 +339,11 @@ def render_page_content(pathname):
         ], fluid=True, style={'height': '-40vh'})
     
     elif pathname == '/page2':
+        try:
             from pages import page2
             return page2.layout
+        except Exception as e:
+            return html.H1(f"Erro ao carregar página: {str(e)}", style={"textAlign": "center"})
     else:
         return "404 Page Error! Please select a valid page."
 
