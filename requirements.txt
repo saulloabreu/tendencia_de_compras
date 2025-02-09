@@ -2,5 +2,6 @@ Dash
 werkzeug
 pandas
 plotly==6.0.0
+plotly_express
 dash-bootstrap-components
 dash-bootstrap-templates
