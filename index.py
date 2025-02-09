@@ -73,13 +73,12 @@ sidebar_header = dbc.Row(
     ]
 )
 
-dcc.Store(id="sidebar-state", data={"collapsed": True})
+# dcc.Store(id="sidebar-state", data={"collapsed": True})
+dcc.Store(id="sidebar-state", data={"collapsed": True, "className": "collapsed"})
 
 sidebar = html.Div(
     [
         sidebar_header,
-       # envolvemos a regra horizontal e a sinopse curta em uma div que pode ser
-        # escondido em uma tela pequena
         html.Div(
             [
                 html.Hr(),
@@ -90,8 +89,6 @@ sidebar = html.Div(
             ],
             id="blurb",
         ),
-        # use o componente Collapse para animar links ocultos/revelados
-       # Menu suspenso de painéis
 
         html.Div([
             dbc.NavLink([
@@ -831,19 +828,20 @@ def update_graphs(n_clicks_all, n_clicks_male, n_clicks_female):
 
 # Callback para alternar o estado do Sidebar (Aberto/Recolhido)
 @app.callback(
-    [Output("sidebar", "className"), Output("sidebar-state", "data")],  # Atualiza a classe do sidebar e o estado armazenado
-    [Input("sidebar-toggle", "n_clicks")],  # Dispara quando o botão de toggle do sidebar é clicado
-    [State("sidebar-state", "data")],  # Obtém o estado atual do sidebar antes de alternar
-    prevent_initial_call=True  # Evita que o callback seja executado automaticamente ao carregar a página
+    [Output("sidebar", "className"), Output("sidebar-state", "data")],  
+    [Input("sidebar-toggle", "n_clicks")],  
+    [State("sidebar-state", "data")], 
+    prevent_initial_call=True  
 )
 def toggle_sidebar(n, sidebar_data):
     is_collapsed = sidebar_data["collapsed"]
-    new_class = "collapsed" if not is_collapsed else ""  # Alterna entre aberto/fechado
+    new_class = "collapsed" if not is_collapsed else ""  
     
-    return new_class, {"collapsed": not is_collapsed}  # Retorna a nova classe e o novo estado armazenado
+    return new_class, {"collapsed": not is_collapsed} 
 
 
-# 📌 Callback para expandir ou recolher o menu de navegação (Navbar)
+
+# Callback para expandir ou recolher o menu de navegação (Navbar)
 @app.callback(
     Output("collapse", "is_open"),  # Atualiza se o menu da navbar está aberto ou fechado
     [Input("navbar-toggle", "n_clicks")],  # Dispara quando o botão da navbar é clicado
@@ -856,6 +854,6 @@ def toggle_collapse(n, is_open):
 
 
 if __name__ == "__main__":
-    # app.run_server(port=8588, debug=True)
+    app.run_server(port=8588, debug=True)
     # app.run_server(host='0.0.0.0', debug = True, port=int(os.environ.get('PORT', 8588)))
-    app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 8050)))
+    # app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 8050)))

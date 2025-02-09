@@ -6,13 +6,10 @@
 }
 
 .collapsed {
-  width: 0;
+  width: auto;
   overflow: hidden;
   transition: width 0.3s ease-in-out;
 }
-
-
-
 
 
 #sidebar {
