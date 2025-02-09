@@ -1,3 +1,4 @@
+from pages import page1, page2  # Importação antecipada
 import dash
 from dash import html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
@@ -6,7 +7,6 @@ import plotly.graph_objects as go
 import pandas as pd
 from dash_bootstrap_templates import ThemeSwitchAIO
 from app import *
-# from pages import page2
 import os
 
 
@@ -337,7 +337,7 @@ def render_page_content(pathname):
         ], fluid=True, style={'height': '-40vh'})
     
     elif pathname == '/page2':
-            from pages import page2
+            # from pages import page2
             return page2.layout
     else:
         return "404 Page Error! Please select a valid page."
