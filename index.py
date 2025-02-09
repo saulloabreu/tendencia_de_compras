@@ -45,14 +45,12 @@ config_graph={"displayModeBar": False, "showTips": False}
 ''' ============================# Sidebar #================================'''
 sidebar_header = dbc.Row(
     [
-        dbc.Col(html.H4("Tendências \nde Compras", className="display-7")),
+        dbc.Col(html.H3(id = 'sidebar-title', className="display-7")),
         dbc.Col(
             [
                 html.Button(
-                    # use the Bootstrap navbar-toggler classes to style
                     html.Span(className="navbar-toggler-icon"),
                     className="navbar-toggler",
-                    # the navbar-toggler classes don't set color
                     style={
                         "color": "rgba(0,0,0,.5)",
                         "border-color": "rgba(0,0,0,.1)",
@@ -60,10 +58,8 @@ sidebar_header = dbc.Row(
                     id="navbar-toggle",
                 ),
                 html.Button(
-                    # use the Bootstrap navbar-toggler classes to style
                     html.Span(className="navbar-toggler-icon"),
                     className="navbar-toggler",
-                    # the navbar-toggler classes don't set color
                     style={
                         "color": "rgba(0,0,0,.5)",
                         "border-color": "rgba(0,0,0,.1)",
@@ -71,14 +67,13 @@ sidebar_header = dbc.Row(
                     id="sidebar-toggle",
                 ),
             ],
-            # the column containing the toggle will be only as wide as the
-            # toggle, resulting in the toggle being right aligned
             width="auto",
-            # vertically align the toggle in the center
             align="center",
         ),
     ]
 )
+
+dcc.Store(id="sidebar-state", data={"collapsed": True})
 
 sidebar = html.Div(
     [
@@ -185,11 +180,13 @@ sidebar = html.Div(
 
     ],
     id="sidebar",
+    className="collapsed" 
 )
 
 content = html.Div(id="page-content")
 
-app.layout = html.Div([dcc.Location(id="url", refresh=True), sidebar, content], 
+app.layout = html.Div([dcc.Location(id="url", refresh=True), sidebar, content, 
+                       dcc.Store(id="sidebar-state", data={"collapsed": True})], 
                           style={"height": "100vh", "overflow-x": "hidden"} 
 )
 
@@ -239,7 +236,9 @@ def render_page_content(pathname):
                             ),
                             dbc.Row([
                                 dbc.Col([
-                                    dcc.Graph(id='graph_1', className='dbc', config=config_graph)
+                                    dcc.Graph(id='graph_1', className='dbc', config=config_graph, 
+                                              style = {'margin-top':'30px'}
+                                              )
                                 ], sm=12, md=12), 
                             ])
                         ])
@@ -250,7 +249,7 @@ def render_page_content(pathname):
                         dbc.CardBody([
                             dbc.Row(
                                 dbc.Col(
-                                    html.H5('Maiores Receitas por Categorias'), 
+                                    html.H5('Categorias com Maiores Receitas'), 
                                     style={'textAlign': 'center'}
                                 )
                             ),
@@ -278,7 +277,9 @@ def render_page_content(pathname):
                             ),
                             dbc.Row([
                                 dbc.Col([
-                                    dcc.Graph(id='graph_6', className='dbc', config=config_graph)
+                                    dcc.Graph(id='graph_6', className='dbc', config=config_graph, 
+                                              style = {'margin-top':'30px'}
+                                              )
                                 ], sm=12, lg=12, 
                                 )
                             ]),
@@ -328,7 +329,7 @@ def render_page_content(pathname):
                             )
                         ),
                         dcc.Graph(id='graph_3', className='dbc', config=config_graph, 
-                        # style={"margin-top": "auto"}
+                        style={"margin-top": "80px"}
                         )
                     ], style=tab_card)
                 ], sm=12, lg=5)
@@ -470,7 +471,7 @@ def compras_por_temporada(df):
             showgrid=False,  # Remove a linha de grade do eixo x
             zeroline=False,  # Remove a linha zero do eixo x
             showticklabels=True, 
-            tickangle=45, 
+            # tickangle=45, 
             showline=True, 
             linecolor='gray',  # Cor da linha (vermelho com opacidade)
             linewidth=2
@@ -631,7 +632,7 @@ def plot_demanda_clothing(df):
             showgrid=False,  # Remove a linha de grade do eixo x
             zeroline=True,  # Remove a linha zero do eixo x
             showticklabels=True, 
-            tickangle=45, 
+            # tickangle=15, 
             showline=True, 
             linecolor='gray',  # Cor da linha
             linewidth=2,
@@ -683,6 +684,21 @@ def produtos_com_mais_receita(df):
 
 
 '''============================# CallBacks #==============================='''
+# call back que altera o titulo conforme a pagina
+@app.callback(
+    Output("sidebar-title", "children"),
+    Input("url", "pathname")  # Detecta mudança na URL
+)
+def update_sidebar_title(pathname):
+    if pathname == "/":
+        return "Tendências de Compras"
+    elif pathname == "/page2":
+        return "Análise de Vendas"
+    else:
+        return "Dashboard"  
+
+
+'''callback que reforça o acionamento da pagina dois do dashboard'''
 @app.callback(
     Output("url", "pathname"), 
     Input("btn-page2", "n_clicks"),
@@ -727,7 +743,7 @@ def toggle_filter_dropdown(n, n_clicks_all, n_clicks_male, n_clicks_female, is_o
 
     # Se qualquer botão de gênero for clicado, fecha o dropdown e atualiza o filtro
     if button_id in ["gender-all", "gender-male", "gender-female"]:
-        return False, button_id  # Fecha o dropdown e armazena o filtro selecionado
+        return True, button_id  # Fecha o dropdown e armazena o filtro selecionado
 
     # Se o botão de toggle foi clicado, alterna o estado do dropdown
     if button_id == "toggle-filter-dropdown":
@@ -736,7 +752,7 @@ def toggle_filter_dropdown(n, n_clicks_all, n_clicks_male, n_clicks_female, is_o
     return is_open, dash.no_update  # Mantém o estado atual do dropdown e não altera o filtro
 
 
-#callback que estiliza os botoes salvando a utima opção do usuario
+#callback que estiliza os botoes salvando a ultima opção do usuario
 @app.callback(
     [
         Output("gender-all", "style"),
@@ -746,10 +762,6 @@ def toggle_filter_dropdown(n, n_clicks_all, n_clicks_male, n_clicks_female, is_o
     [Input('selected-filter', 'data')]
 )
 def highlight_selected_filter(selected_filter):
-    # Estilos padrão para os botões
-    # dropdown-content", "is_open"),
-    # toggle-dropdown", "n_clicks"),
-    # dropdown-content", "is_open")
     default_style = {'background-color': '#17a2b8', 'color': 'white'}
     selected_style = {'background-color': '#0056b3', 'color': 'white'}  # Azul escuro para destaque
 
@@ -817,26 +829,30 @@ def update_graphs(n_clicks_all, n_clicks_male, n_clicks_female):
 
 
 
+# Callback para alternar o estado do Sidebar (Aberto/Recolhido)
 @app.callback(
-    Output("sidebar", "className"),
-    [Input("sidebar-toggle", "n_clicks")],
-    [State("sidebar", "className")],
+    [Output("sidebar", "className"), Output("sidebar-state", "data")],  # Atualiza a classe do sidebar e o estado armazenado
+    [Input("sidebar-toggle", "n_clicks")],  # Dispara quando o botão de toggle do sidebar é clicado
+    [State("sidebar-state", "data")],  # Obtém o estado atual do sidebar antes de alternar
+    prevent_initial_call=True  # Evita que o callback seja executado automaticamente ao carregar a página
 )
-def toggle_classname(n, classname):
-    if n and classname == "":
-        return "collapsed"
-    return ""
+def toggle_sidebar(n, sidebar_data):
+    is_collapsed = sidebar_data["collapsed"]
+    new_class = "collapsed" if not is_collapsed else ""  # Alterna entre aberto/fechado
+    
+    return new_class, {"collapsed": not is_collapsed}  # Retorna a nova classe e o novo estado armazenado
 
 
+# 📌 Callback para expandir ou recolher o menu de navegação (Navbar)
 @app.callback(
-    Output("collapse", "is_open"),
-    [Input("navbar-toggle", "n_clicks")],
-    [State("collapse", "is_open")],
+    Output("collapse", "is_open"),  # Atualiza se o menu da navbar está aberto ou fechado
+    [Input("navbar-toggle", "n_clicks")],  # Dispara quando o botão da navbar é clicado
+    [State("collapse", "is_open")],  # Obtém o estado atual do menu
 )
 def toggle_collapse(n, is_open):
     if n:
-        return not is_open
-    return is_open
+        return not is_open  # Inverte o estado atual do menu (abre/fecha)
+    return is_open  # Se não houve clique, mantém o estado atual
 
 
 if __name__ == "__main__":

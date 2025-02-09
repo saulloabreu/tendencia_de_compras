@@ -52,12 +52,6 @@ config_graph={"displayModeBar": False, "showTips": False}
 
 # Layout do aplicativo
 layout = html.Div([
-    # # sidebar,
-    # html.Div([
-    #     html.H3('Tendências de Comportamento de Compras', style={"textAlign": "center"}),
-    #     dash.page_container
-    # ], className="content"),
-
     # Container com os gráficos
     dbc.Container([
         # 1 Row
@@ -147,7 +141,6 @@ layout = html.Div([
                                 dcc.Graph(id = 'graph5', className = 'dbc', config = config_graph, 
                                           style = { 
                                                    'margin-bottom':'-25px', 
-                                                   
                                                    }
                                                    )
                             ])
@@ -186,7 +179,7 @@ def vendas_por_tamanho_e_temporada(df, genero=None):
         hovertemplate="<b>%{label}</b><br>Valor: %{value}<br>", 
         textfont=dict(size=13),  # Diminuindo o tamanho da fonte
         marker=dict(
-            colors=[ 'green' if temporada == temporada_max_venda else '#1F77B4' for temporada in tamanho_por_temporada['Temporada']]
+            colors=[ '#00224E' if temporada == temporada_max_venda else '#1F77B4' for temporada in tamanho_por_temporada['Temporada']]
         )
     )
 
@@ -364,7 +357,7 @@ def Pagamentos_por_Categoria_e_Produto(df):
                         x='Categoria', 
                         y='Quantidade', 
                         color='Método_de_pagamento', 
-                        color_discrete_sequence=['#1F77B4', 'green', 'silver', 'olive',  '#FF7F0E', '#D62728']
+                        color_discrete_sequence=['#1F77B4', 'green', 'gray', 'olive',  '#00224E', 'white']
 
 
                         #    text = 'Quantidade',['#1F77B4', '#2CA02C', '#FF7F0E', '#D62728', 'silver', 'olive']
