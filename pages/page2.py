@@ -8,11 +8,25 @@ import base64
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.subplots as sp
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
 '''=============================== Carregar os dados #==============================='''
-df = pd.read_csv('/home/black_d/Downloads/Provas/data/df_tendências_de_compras.csv')
+# Caminho relativo para a pasta "data"
+file_path = os.path.join(os.path.dirname(__file__), "data", "df_tendências_de_compras.csv")
 
+if not os.path.exists(file_path):
+    import requests
+    url =  'https://github.com/saulloabreu/tendencia_de_compras/blob/main/data/df_tend%C3%AAncias_de_compras.csv'
+    r = requests.get(url)
+    os.makedirs("data", exist_ok = True)
+    with open(file_path, "wb") as f:
+        f.write(r.content)
+
+# Carregando o arquivo
+df = pd.read_csv(file_path)
 
 ''' ============================# config_style #================================'''
 tab_card = {'height':'100%'}
@@ -499,5 +513,5 @@ def update_graphs(n_clicks_all, n_clicks_male, n_clicks_female):
     )
 
 
-if __name__ == "__main__":
-    app.run_server(debug=True)
+# if __name__ == "__main__":
+#    app.run_server(host='0.0.0.0', port=int(os.environ.get('PORT', 8050)))
