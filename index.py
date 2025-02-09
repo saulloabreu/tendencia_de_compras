@@ -1,4 +1,3 @@
-from pages import page1, page2  # Importação antecipada
 import dash
 from dash import html, dcc, Input, Output, State
 import dash_bootstrap_components as dbc
@@ -122,7 +121,7 @@ sidebar = html.Div(
                        dbc.Button("DashBoard 1", href="/", color="info",className="m-1 btn-hover", 
                                     style = {'font-size': '12px'},
                                     ),
-                        dbc.Button("DashBoard 2", id="btn-page2",  color="info", className="m-1 btn-hover", 
+                        dbc.Button("DashBoard 2", id = 'btn-page2', href="/page2", color="info", className="m-1 btn-hover", 
                                    style = {'font-size': '12px'},
                                    ),
                     ], 
@@ -187,7 +186,7 @@ sidebar = html.Div(
 
 content = html.Div(id="page-content")
 
-app.layout = html.Div([dcc.Location(id="url", refresh=False), sidebar, content], 
+app.layout = html.Div([dcc.Location(id="url", refresh=True), sidebar, content], 
                           style={"height": "100vh", "overflow-x": "hidden"} 
 )
 
@@ -337,7 +336,7 @@ def render_page_content(pathname):
         ], fluid=True, style={'height': '-40vh'})
     
     elif pathname == '/page2':
-            # from pages import page2
+            from pages import page2
             return page2.layout
     else:
         return "404 Page Error! Please select a valid page."
@@ -685,7 +684,6 @@ def produtos_com_mais_receita(df):
 )
 def go_to_page2(n_clicks):
     return "/page2"
-
 
 
 # callback que controla as paginas do dashboard
