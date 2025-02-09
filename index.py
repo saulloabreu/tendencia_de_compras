@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import pandas as pd
 from dash_bootstrap_templates import ThemeSwitchAIO
 from app import *
+from pages import page2
 import os
 
 
@@ -121,7 +122,7 @@ sidebar = html.Div(
                        dbc.Button("DashBoard 1", href="/", color="info",className="m-1 btn-hover", 
                                     style = {'font-size': '12px'},
                                     ),
-                        dbc.Button("DashBoard 2", href="/page2", color="info", className="m-1 btn-hover", 
+                        dbc.Button("DashBoard 2", id="btn-page2",  color="info", className="m-1 btn-hover", 
                                    style = {'font-size': '12px'},
                                    ),
                     ], 
@@ -336,7 +337,6 @@ def render_page_content(pathname):
         ], fluid=True, style={'height': '-40vh'})
     
     elif pathname == '/page2':
-            from pages import page2
             return page2.layout
     else:
         return "404 Page Error! Please select a valid page."
@@ -677,6 +677,16 @@ def produtos_com_mais_receita(df):
 
 
 '''============================# CallBacks #==============================='''
+@app.callback(
+    Output("url", "pathname"), 
+    Input("btn-page2", "n_clicks"),
+    prevent_initial_call=True
+)
+def go_to_page2(n_clicks):
+    return "/page2"
+
+
+
 # callback que controla as paginas do dashboard
 @app.callback(
     Output("dropdown-content", "is_open"),
