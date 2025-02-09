@@ -14,19 +14,27 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 
 '''=============================== Carregar os dados #==============================='''
-# Caminho relativo para a pasta "data"
-file_path = os.path.join(os.path.dirname(__file__), "data", "df_tendências_de_compras.csv")
+# Criar a pasta 'data' se não existir
+os.makedirs("data", exist_ok=True)
 
+# Caminho relativo correto
+file_path = os.path.join("data", "df_tendências_de_compras.csv")
+
+# Se o arquivo não existir, baixe do GitHub
 if not os.path.exists(file_path):
     import requests
     url = 'https://raw.githubusercontent.com/saulloabreu/tendencia_de_compras/main/data/df_tendências_de_compras.csv'
     r = requests.get(url)
-    os.makedirs("data", exist_ok = True)
-    with open(file_path, "wb") as f:
-        f.write(r.content)
+    
+    if r.status_code == 200:  # Verifica se o download foi bem-sucedido
+        with open(file_path, "wb") as f:
+            f.write(r.content)
+    else:
+        raise Exception(f"Erro ao baixar o arquivo: {r.status_code}")
 
-# Carregando o arquivo
+# Carregar o arquivo CSV
 df = pd.read_csv(file_path)
+
 
 ''' ============================# config_style #================================'''
 tab_card = {'height':'100%'}
