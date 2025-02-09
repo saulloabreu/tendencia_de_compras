@@ -138,18 +138,34 @@ layout = html.Div([
 ])
 
 # '''=======================# graficos-1 #==========================='''
-def vendas_por_tamanho_e_temporada(df):
+def vendas_por_tamanho_e_temporada(df, genero=None):
+    # Filtrando os dados com base no gênero (se fornecido)
+    if genero:
+        df = df[df['Gênero'] == genero]
+
     # Relação das Vendas por Tamanho e Temporadas
     tamanho_por_temporada = df.groupby(['Temporada', 'Tamanho'], observed=False)['Valor_da_compra_(USD)'].sum().reset_index()  
 
-    # Criando o gráfico de treemap com as cores definidas para a temporada e tamanho
+    # Calculando a temporada com maior venda
+    temporada_max_venda = tamanho_por_temporada.groupby('Temporada')['Valor_da_compra_(USD)'].sum().idxmax()
+    
+    # Criando o gráfico de treemap
     fig = px.treemap(tamanho_por_temporada, 
                     path=['Temporada', 'Tamanho'], 
                     values='Valor_da_compra_(USD)',  
                     color='Valor_da_compra_(USD)',  
                     color_continuous_scale='ice', 
-                                        # color_continuous_scale='RdBu'  
+    )
 
+    # Modificando as cores para destacar a temporada com maior venda
+    fig.update_traces(
+        texttemplate="%{label}",  # Exibe o 'Tamanho' nos quadrados
+        textposition="middle center",  # Posiciona o texto dentro da caixa
+        hovertemplate="<b>%{label}</b><br>Valor: %{value}<br>", 
+        textfont=dict(size=13),  # Diminuindo o tamanho da fonte
+        marker=dict(
+            colors=[ 'green' if temporada == temporada_max_venda else '#1F77B4' for temporada in tamanho_por_temporada['Temporada']]
+        )
     )
 
     fig.update_layout(
@@ -160,6 +176,7 @@ def vendas_por_tamanho_e_temporada(df):
     )
 
     return fig
+
 
 # '''=======================# graficos-2 #==========================='''
 def cores_por_temporada(df):

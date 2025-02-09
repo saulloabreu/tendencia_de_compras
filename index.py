@@ -378,35 +378,41 @@ def distribuicao_idade(df):
     return fig1
 
 '''============================# Gráfico 2 #==================================='''
-def distribuicao_genero(df):
+def distribuicao_genero(df, gender_filter):
     # Gráfico 2: Distribuição de Gênero nas Idades mais Frequentes
     distribuicao_por_genero = df.groupby('Gênero')['Idade'].count().reset_index()
     distribuicao_por_genero.columns = ['Gênero', 'Quantidade_Clientes']
 
-    menor_porcent = distribuicao_por_genero['Quantidade_Clientes'].idxmin()
-    pull_values = [0.06 if i == menor_porcent else 0 for i in range(len(distribuicao_por_genero))]
+    # Definir a cor dinamicamente com base no filtro
+    color_map = {'Feminino': '#2C6A8C', 'Masculino': '#00224E'}
+    
+    if gender_filter in color_map:
+        colors = [color_map[gender_filter]]
+    else:
+        colors = ['#2C6A8C', '#00224E']  # Mantém as duas cores se não houver filtro
 
     fig2 = go.Figure(data=[go.Pie(
         labels=distribuicao_por_genero['Gênero'],
         values=distribuicao_por_genero['Quantidade_Clientes'],
-        pull=pull_values, 
-        marker=dict(colors=['#2C6A8C', '#00224E']), 
-        hole = 0.4
-            )
-        ]
-    )
-    fig2.update_traces(hovertemplate="<b>%{label}</b><br>Valor: %{value}<br>Percentual: %{percent}"
-)
+        marker=dict(colors=colors),  
+        hole=0.4
+    )])
+
+    fig2.update_traces(hovertemplate="<b>%{label}</b><br>Valor: %{value}<br>Percentual: %{percent}", 
+                       marker = dict(line=dict(color='#303030', width=3))
+                       )
     fig2.update_layout(
         main_config,
         height=250,   
         legend=dict(
-                orientation="h",  # Torna a legenda horizontal
-                y=-0.2            # Move a legenda para baixo
+            orientation="h",
+            y=-0.2
         ), 
-        margin=dict(l=20, r=20, t=5, b=5),  # Reduzindo margens para ocupar mais espaço
+        margin=dict(l=20, r=20, t=5, b=5),
     )
+
     return fig2
+
 
 '''============================# Gráfico 3 #==================================='''
 def compras_por_temporada(df):
@@ -639,36 +645,27 @@ def plot_demanda_clothing(df):
 '''============================# Gráfico 7 #==================================='''
 def produtos_com_mais_receita(df):
     # agrupando dados
-    receita_por_produto = df.groupby('Categoria')['Valor_da_compra_(USD)'].sum().reset_index().sort_values(by = 'Valor_da_compra_(USD)', ascending = False
-    )
+    receita_por_produto = df.groupby('Categoria')['Valor_da_compra_(USD)'].sum().reset_index().sort_values(by = 'Valor_da_compra_(USD)', ascending = False)
+
     # Seus dados
-    color_discrete_sequence = [
-            'gold', 
-            '#00224E', 
-            'blue', 
-            '#2C6A8C'
-            ]
+    color_discrete_sequence = [ 'gold', '#00224E', 'blue', '#2C6A8C' ]
 
     # Criando o gráfico de pizza
     fig = px.pie(receita_por_produto, 
                 values='Valor_da_compra_(USD)', 
                 names='Categoria', 
                 hole = 0.4, 
-                # pull=pull_values, 
-
                 )
 
     # Atualizando o gráfico
     fig.update_traces(
-       
-        marker=dict(colors=color_discrete_sequence, line=dict(color='rgba(52, 58, 64, 1)', width=3)),
-        hovertemplate="<b>%{label}</b><br>Valor: %{value}<br>Percentual: %{percent}"
+        marker=dict(colors=color_discrete_sequence, line=dict(color='#303030', width=3)),
+        hovertemplate="<b>%{label}</b><br>Valor: %{value}<br>Percentual: %{percent}",  
     )
     # Removendo a legenda
     fig.update_layout( 
                     main_config,
                     height=300, 
-                    margin=dict(l=20, r=20, t=5, b=5),  # Reduzindo margens para ocupar mais espaço
                     legend=dict(
                             orientation="h",  # Torna a legenda horizontal
                             y=-0.2            # Move a legenda para baixo
@@ -786,7 +783,7 @@ def update_graphs(n_clicks_all, n_clicks_male, n_clicks_female):
 
     # Criando gráficos
     graph_1 = distribuicao_idade(filtered_df)
-    graph_2 = distribuicao_genero(filtered_df)
+    graph_2 = distribuicao_genero(filtered_df, gender_filter)
     graph_3 = compras_por_temporada(filtered_df)
     graph_4 = distribuicao_por_tamanho(filtered_df)
     graph_5 = metodo_de_pagamento(filtered_df, gender_filter)
