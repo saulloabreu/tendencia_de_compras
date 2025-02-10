@@ -293,7 +293,7 @@ def render_page_content(pathname):
                                 dbc.CardBody([
                                     dbc.Row(
                                         dbc.Col(
-                                            html.H5('Método de Pagamentos mais Utilizados '),
+                                            html.H5('Métodos de Pagamentos mais Utilizados '),
                                         )
                                     ),
                                     dcc.Graph(id='graph_5', className='dbc', config=config_graph)
